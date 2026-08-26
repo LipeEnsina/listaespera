@@ -1,100 +1,96 @@
-import Image from "next/image";
+import LinesBackground from "@/components/LinesBackground";
+import TopBar from "@/components/TopBar";
+import Marquee from "@/components/Marquee";
+import Reveal from "@/components/Reveal";
+import WaitlistCounter from "@/components/WaitlistCounter";
+import WaitlistForm from "@/components/WaitlistForm";
+import InstagramLinks from "@/components/InstagramLinks";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    /* Coluna de altura total: o herói ocupa o espaço que sobra, e a faixa +
+       rodapé encostam embaixo. No desktop a página fecha em uma tela só. */
+    <div className="flex min-h-svh flex-col">
+      <LinesBackground />
+      <TopBar />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+      <main className="flex flex-1 flex-col">
+        <section className="container-page flex flex-1 items-center py-6 lg:py-8">
+          <div className="grid w-full items-center gap-9 lg:grid-cols-[1fr_460px] lg:gap-14">
+            <div>
+              <Reveal>
+                <span className="inline-flex items-center rounded-full border border-magenta/30 bg-magenta/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-magenta">
+                  Mentoria
+                </span>
+              </Reveal>
+
+              <Reveal delay={70}>
+                <h1 className="headline mt-4 text-[2.6rem] leading-[0.88] sm:text-6xl lg:text-[4.2rem]">
+                  <span className="block text-white">Lista de</span>
+                  <span className="block text-gradient-magenta">espera</span>
+                </h1>
+              </Reveal>
+
+              <Reveal delay={140}>
+                <p className="mt-5 max-w-lg leading-relaxed text-white/70 sm:text-lg">
+                  A mentoria do{" "}
+                  <strong className="font-semibold text-white">
+                    Lipe Ensina
+                  </strong>{" "}
+                  para quem quer parar de postar no escuro: posicionamento,
+                  conteúdo e visibilidade — com o método de quem construiu{" "}
+                  <strong className="font-semibold text-white">
+                    +1,6 milhão
+                  </strong>{" "}
+                  de seguidores do zero.
+                </p>
+              </Reveal>
+
+              <Reveal delay={210}>
+                {/* Some sozinho enquanto o total ainda não é relevante */}
+                <WaitlistCounter />
+
+                <a
+                  href="#formulario"
+                  className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white underline decoration-magenta decoration-2 underline-offset-[6px] transition hover:text-magenta lg:hidden"
+                >
+                  Entrar na lista
+                  <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4">
+                    <path
+                      d="M12 5v14m0 0l6-6m-6 6l-6-6"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
+              </Reveal>
+
+              <Reveal delay={280}>
+                <InstagramLinks className="mt-7 border-t border-white/[0.07] pt-6" />
+              </Reveal>
+            </div>
+
+            <Reveal delay={120}>
+              <div id="formulario" className="scroll-mt-20">
+                <WaitlistForm />
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        <Marquee />
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer className="py-4">
+        <div className="container-page flex flex-col items-center gap-2 text-center text-xs sm:flex-row sm:justify-between sm:text-left">
+          <p className="text-white/30">
+            © {new Date().getFullYear()} Lipe Ensina
+          </p>
+          <span className="text-white/25">Dados protegidos pela LGPD</span>
+        </div>
       </footer>
     </div>
   );
