@@ -18,7 +18,7 @@ async function loadRows(): Promise<{ rows: WaitlistRow[]; error: string | null }
     return {
       rows: [],
       error:
-        "Supabase não configurado. Defina NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no .env.local.",
+        "Supabase não configurado. Defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no .env.local.",
     };
   }
 

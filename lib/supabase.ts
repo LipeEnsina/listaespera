@@ -17,18 +17,35 @@ export type WaitlistRow = {
 let cached: SupabaseClient | null = null;
 
 /**
+ * A URL do projeto é lida só aqui, no servidor — nunca no navegador. Por isso
+ * o nome correto é SUPABASE_URL, sem o prefixo NEXT_PUBLIC_.
+ *
+ * O prefixo vem da documentação do Supabase, que assume o cliente rodando no
+ * browser. No nosso caso ele é enganoso e a Vercel bloqueia salvar a variável
+ * como Secret ("public prefixes expose values to the browser"). Aceitamos o
+ * nome antigo como fallback para não quebrar ambientes já configurados.
+ */
+function getSupabaseUrl(): string | undefined {
+  return (
+    process.env.SUPABASE_URL?.trim() ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
+    undefined
+  );
+}
+
+/**
  * Cliente com a service_role key. NUNCA importe isto em componentes de cliente:
  * a chave ignora RLS e dá acesso total à tabela.
  */
 export function getServiceClient(): SupabaseClient {
   if (cached) return cached;
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = getSupabaseUrl();
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !key) {
     throw new Error(
-      "Supabase não configurado. Defina NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no .env.local",
+      "Supabase não configurado. Defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no .env.local",
     );
   }
 
@@ -48,8 +65,5 @@ export function getServiceClient(): SupabaseClient {
 }
 
 export function isSupabaseConfigured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
-  );
+  return Boolean(getSupabaseUrl() && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }

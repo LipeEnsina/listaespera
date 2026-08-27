@@ -21,7 +21,7 @@ three.js (fundo).
 2. Abra **SQL Editor → New query**, cole o conteúdo de
    [`supabase/schema.sql`](supabase/schema.sql) e rode.
 3. Vá em **Project Settings → API** e copie:
-   - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
+   - **Project URL** → `SUPABASE_URL`
    - **service_role** (em *Project API keys*) → `SUPABASE_SERVICE_ROLE_KEY`
 
 > ⚠️ A `service_role` ignora as regras de segurança do banco. Ela só é usada
@@ -38,12 +38,12 @@ Preencha o `.env.local`:
 
 | Variável | O que é |
 | --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | URL do projeto Supabase |
+| `SUPABASE_URL` | URL do projeto Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | Chave secreta do Supabase (só servidor) |
 | `ADMIN_USERNAME` | Usuário do painel |
 | `ADMIN_PASSWORD` | Senha do painel |
 | `ADMIN_SESSION_SECRET` | Segredo que assina o cookie de sessão |
-| `NEXT_PUBLIC_SITE_URL` | Domínio final (usado nas metatags) |
+| `SITE_URL` | *(opcional)* Domínio final, só para as metatags de compartilhamento |
 
 Para gerar o segredo da sessão:
 
@@ -65,8 +65,13 @@ npm run dev
 
 1. Suba o repositório para o GitHub.
 2. Em [vercel.com/new](https://vercel.com/new), importe o repositório.
-3. Em **Settings → Environment Variables**, cadastre as mesmas seis variáveis
-   do `.env.local` (marcando *Production* e *Preview*).
+3. Em **Settings → Environment Variables**, cadastre as variáveis do
+   `.env.local` (marcando *Production* e *Preview*).
+
+   Nenhuma leva o prefixo `NEXT_PUBLIC_`: todas são lidas só no servidor.
+   A Vercel bloqueia salvar uma variável `NEXT_PUBLIC_*` como **Secret**,
+   justamente porque esse prefixo significa "exposta ao navegador". Sem o
+   prefixo, todas podem ficar como Secret.
 4. Deploy. O link final é o que vai na bio do `@llipe.ensina`.
 
 ---

@@ -28,7 +28,9 @@ const FALLBACK_SITE_URL = "https://lipeensina.com.br";
  */
 function resolveSiteUrl(): URL {
   const candidatos = [
-    process.env.NEXT_PUBLIC_SITE_URL,
+    // Sem prefixo: as metatags sao geradas no servidor, o browser nao le isto.
+    process.env.SITE_URL,
+    process.env.NEXT_PUBLIC_SITE_URL, // nome antigo, mantido por compatibilidade
     process.env.VERCEL_PROJECT_PRODUCTION_URL,
     FALLBACK_SITE_URL,
   ];
