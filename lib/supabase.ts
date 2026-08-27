@@ -34,6 +34,15 @@ export function getServiceClient(): SupabaseClient {
 
   cached = createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
+    global: {
+      // O App Router do Next troca o fetch global por uma versão com Data
+      // Cache. Como o supabase-js chama fetch por baixo, as consultas ficavam
+      // em cache entre requisições e o painel exibia linhas antigas — chegou a
+      // mostrar um inscrito já apagado. Uma lista de espera precisa ser sempre
+      // lida do banco, então desligamos o cache na origem: assim vale para
+      // todas as rotas, sem depender de `dynamic`/`revalidate` em cada uma.
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
   });
   return cached;
 }

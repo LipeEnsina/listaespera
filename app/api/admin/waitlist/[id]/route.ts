@@ -35,14 +35,26 @@ export async function PATCH(
     return NextResponse.json({ message: "Status inválido." }, { status: 400 });
   }
 
-  const { error } = await getServiceClient()
+  // O .select() é o que permite saber quantas linhas casaram: sem ele, um
+  // update que não encontra nada volta sem erro e a rota responderia 200 para
+  // uma alteração que nunca aconteceu — o painel mostraria o novo status e o
+  // banco continuaria como estava.
+  const { data, error } = await getServiceClient()
     .from("waitlist")
     .update({ status })
-    .eq("id", params.id);
+    .eq("id", params.id)
+    .select("id");
 
   if (error) {
     console.error("[admin] falha ao atualizar status:", error);
     return NextResponse.json({ message: "Não foi possível salvar." }, { status: 500 });
+  }
+
+  if (!data || data.length === 0) {
+    return NextResponse.json(
+      { message: "Esse inscrito não existe mais. Atualize a página." },
+      { status: 404 },
+    );
   }
 
   return NextResponse.json({ ok: true });

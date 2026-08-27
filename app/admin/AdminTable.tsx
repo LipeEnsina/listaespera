@@ -67,10 +67,16 @@ export default function AdminTable({ rows }: { rows: WaitlistRow[] }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-      if (!response.ok) throw new Error();
-    } catch {
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.message);
+      }
+    } catch (err) {
       setData(previous);
-      setSaveError("Não foi possível salvar o status. Tente de novo.");
+      setSaveError(
+        (err instanceof Error && err.message) ||
+          "Não foi possível salvar o status. Tente de novo.",
+      );
     } finally {
       setSaving(null);
     }
