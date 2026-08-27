@@ -24,8 +24,21 @@ function b64urlDecode(input: string): Uint8Array {
   return out;
 }
 
+/**
+ * Lê a variável já sem espaços nas pontas.
+ *
+ * Valor colado em painel web (Vercel, Railway…) costuma vir com uma quebra de
+ * linha invisível no fim. Aconteceu de verdade: o ADMIN_PASSWORD em produção
+ * ficou com "\n" no final e nenhum login funcionava, com a mensagem genérica
+ * de senha incorreta — impossível de diagnosticar pela tela.
+ */
+function envLimpo(nome: string): string | undefined {
+  const valor = process.env[nome]?.trim();
+  return valor ? valor : undefined;
+}
+
 function getSecret(): string {
-  const secret = process.env.ADMIN_SESSION_SECRET;
+  const secret = envLimpo("ADMIN_SESSION_SECRET");
   if (!secret || secret.length < 24) {
     throw new Error(
       "ADMIN_SESSION_SECRET ausente ou curto demais (mínimo 24 caracteres). Gere um com: openssl rand -base64 32",
@@ -97,8 +110,8 @@ export async function checkCredentials(
   username: string,
   password: string,
 ): Promise<boolean> {
-  const expectedUser = process.env.ADMIN_USERNAME;
-  const expectedPass = process.env.ADMIN_PASSWORD;
+  const expectedUser = envLimpo("ADMIN_USERNAME");
+  const expectedPass = envLimpo("ADMIN_PASSWORD");
   if (!expectedUser || !expectedPass) {
     throw new Error(
       "ADMIN_USERNAME e ADMIN_PASSWORD precisam estar definidos no .env.local",
@@ -107,10 +120,13 @@ export async function checkCredentials(
 
   const enc = new TextEncoder();
   // Compara os hashes para que a comparação seja de tamanho fixo.
+  // O usuário é normalizado (gente digita com espaço sobrando ou maiúscula do
+  // autocorretor); a senha vai exatamente como foi digitada, porque aparar a
+  // entrada de quem loga mudaria a senha de quem escolheu terminar em espaço.
   const [gotU, gotP, expU, expP] = await Promise.all([
-    crypto.subtle.digest("SHA-256", enc.encode(username)),
+    crypto.subtle.digest("SHA-256", enc.encode(username.trim().toLowerCase())),
     crypto.subtle.digest("SHA-256", enc.encode(password)),
-    crypto.subtle.digest("SHA-256", enc.encode(expectedUser)),
+    crypto.subtle.digest("SHA-256", enc.encode(expectedUser.toLowerCase())),
     crypto.subtle.digest("SHA-256", enc.encode(expectedPass)),
   ]);
 

@@ -41,7 +41,9 @@ export function getServiceClient(): SupabaseClient {
   if (cached) return cached;
 
   const url = getSupabaseUrl();
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // .trim() pelo mesmo motivo da URL: valor colado em painel web costuma
+  // trazer uma quebra de linha invisivel no fim.
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
   if (!url || !key) {
     throw new Error(
@@ -65,5 +67,5 @@ export function getServiceClient(): SupabaseClient {
 }
 
 export function isSupabaseConfigured(): boolean {
-  return Boolean(getSupabaseUrl() && process.env.SUPABASE_SERVICE_ROLE_KEY);
+  return Boolean(getSupabaseUrl() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim());
 }
