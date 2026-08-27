@@ -15,10 +15,42 @@ const sans = Inter({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lipeensina.com.br";
+const FALLBACK_SITE_URL = "https://lipeensina.com.br";
+
+/**
+ * Resolve a URL do site sem deixar o build quebrar.
+ *
+ * `??` só cai no fallback com null/undefined. Uma variável criada na Vercel
+ * sem preencher o valor chega como string vazia, e `new URL("")` derruba o
+ * build inteiro na fase de "Collecting page data" — foi o que aconteceu.
+ * Aqui tratamos vazio, espaço em branco e valor malformado, e aceitamos
+ * domínio sem protocolo (que é como a Vercel expõe o dela).
+ */
+function resolveSiteUrl(): URL {
+  const candidatos = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    FALLBACK_SITE_URL,
+  ];
+
+  for (const bruto of candidatos) {
+    const valor = bruto?.trim();
+    if (!valor) continue;
+    const comProtocolo = /^https?:\/\//i.test(valor) ? valor : `https://${valor}`;
+    try {
+      return new URL(comProtocolo);
+    } catch {
+      // Valor malformado: tenta o próximo candidato.
+    }
+  }
+
+  return new URL(FALLBACK_SITE_URL);
+}
+
+const siteUrl = resolveSiteUrl();
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: siteUrl,
   title: "Lista de espera · Mentoria Lipe Ensina",
   description:
     "Entre na lista de espera da mentoria do Lipe Ensina: posicionamento digital, produção de conteúdo e visibilidade nas redes. Vagas limitadas, avisamos você primeiro.",

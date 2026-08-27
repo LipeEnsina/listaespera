@@ -42,10 +42,22 @@ export default function WaitlistForm() {
   // Guarda de onde a pessoa veio (link da bio, campanha, etc).
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    origem.current =
-      params.get("utm_source") ??
-      params.get("ref") ??
-      (document.referrer ? new URL(document.referrer).hostname : "direto");
+    const utm = params.get("utm_source")?.trim() || params.get("ref")?.trim();
+
+    if (utm) {
+      origem.current = utm.slice(0, 120);
+      return;
+    }
+
+    // `new URL` lança em referrer malformado, e isso derrubaria o effect
+    // inteiro — a origem é um extra, nunca pode atrapalhar o cadastro.
+    try {
+      origem.current = document.referrer
+        ? new URL(document.referrer).hostname
+        : "direto";
+    } catch {
+      origem.current = "direto";
+    }
   }, []);
 
   // Leva o foco para a confirmação — importante para leitores de tela.
